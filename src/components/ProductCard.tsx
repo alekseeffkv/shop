@@ -11,14 +11,14 @@ import {
   Typography,
 } from '@mui/material';
 
-type ProductProps = {
+type ProductCardProps = {
   title: string;
   brand: string;
   price: string;
   image: string;
 };
 
-const Product = ({ title, brand, price, image }: ProductProps) => (
+const ProductCard = ({ title, brand, price, image }: ProductCardProps) => (
   <Card component="article">
     <CardMedia
       component="img"
@@ -63,4 +63,4 @@ const Product = ({ title, brand, price, image }: ProductProps) => (
   </Card>
 );
 
-export default Product;
+export default ProductCard;
