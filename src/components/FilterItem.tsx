@@ -2,14 +2,14 @@ import { Checkbox, FormControlLabel } from '@mui/material';
 
 type FilterItemProps = {
   title: string;
-  code: string;
+  name: string;
   value: boolean;
-  handleChange(): void;
+  handleChange(e: React.ChangeEvent<HTMLInputElement>): void;
 };
 
-const FilterItem = ({ title, code, value, handleChange }: FilterItemProps) => (
+const FilterItem = ({ title, name, value, handleChange }: FilterItemProps) => (
   <FormControlLabel
-    control={<Checkbox name={code} checked={value} onChange={handleChange} />}
+    control={<Checkbox name={name} checked={value} onChange={handleChange} />}
     label={title}
     disableTypography
   />
