@@ -58,29 +58,16 @@ const Homepage = () => {
           {!!paginatedProducts?.length &&
             brands &&
             paginatedProducts.map(
-              ({
-                id,
-                title,
-                image,
-                brand,
-                regular_price: { currency, value },
-              }) => {
-                const formatter = new Intl.NumberFormat('ru', {
-                  style: 'currency',
-                  currency,
-                  minimumFractionDigits: 2,
-                });
-
-                return (
-                  <ProductCard
-                    key={id}
-                    title={title}
-                    image={image}
-                    brand={brands[brand].title}
-                    price={formatter.format(value)}
-                  />
-                );
-              }
+              ({ id, sku, title, image, brand, regular_price }) => (
+                <ProductCard
+                  key={id}
+                  sku={sku}
+                  title={title}
+                  image={image}
+                  brand={brands[brand].title}
+                  price={regular_price}
+                />
+              )
             )}
         </ProductsGrid>
 

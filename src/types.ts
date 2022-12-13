@@ -5,15 +5,14 @@ export type Brand = {
   code: string;
 };
 
+export type Price = { currency: string; value: number };
+
 export type Product = {
-  type: 'simple';
+  type: string;
   id: number;
   sku: string;
   title: string;
-  regular_price: {
-    currency: 'USD';
-    value: number;
-  };
   image: string;
   brand: number;
+  regular_price: Price;
 };
