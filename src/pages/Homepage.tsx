@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
 import { Box, Container, styled } from '@mui/material';
-import { getProducts } from '../api';
-import { Product } from '../types';
+import { useGetProductsQuery } from '../redux/shopApi';
 import ProductCard from '../components/ProductCard';
 import Filter from '../components/Filter';
 
@@ -35,13 +33,7 @@ const ProductsGrid = styled(Box)(
 );
 
 const Homepage = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    getProducts()
-      .then((res) => setProducts(res))
-      .catch((err) => console.log(err));
-  }, []);
+  const { data } = useGetProductsQuery();
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -49,15 +41,16 @@ const Homepage = () => {
         <Filter />
 
         <ProductsGrid>
-          {products.map(({ id, title, image }) => (
-            <ProductCard
-              key={id}
-              title={title}
-              image={image}
-              brand="Brand 1"
-              price="27 USD"
-            />
-          ))}
+          {!!data?.length &&
+            data.map(({ id, title, image }) => (
+              <ProductCard
+                key={id}
+                title={title}
+                image={image}
+                brand="Brand 1"
+                price="27 USD"
+              />
+            ))}
         </ProductsGrid>
       </GridBox>
     </Container>
