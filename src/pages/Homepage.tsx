@@ -1,9 +1,19 @@
 import { useMemo } from 'react';
-import { Box, Container, styled } from '@mui/material';
+import { Link as RouterLink, useSearchParams } from 'react-router-dom';
+import {
+  Box,
+  Container,
+  Pagination,
+  Stack,
+  styled,
+  PaginationItem,
+} from '@mui/material';
 import { useGetBrandsQuery, useGetProductsQuery } from '../redux/shopApi';
 import ProductCard from '../components/ProductCard';
 import Filter from '../components/Filter';
 import { Brand } from '../types';
+
+const PRODUCTS_PER_PAGE = 6;
 
 const GridBox = styled(Box)(
   ({
@@ -14,8 +24,17 @@ const GridBox = styled(Box)(
   }) => ({
     display: 'grid',
     gap: spacing(6),
-    [up('xs')]: { gridTemplateColumns: '1fr' },
-    [up('sm')]: { gridTemplateColumns: `${spacing(25)} 1fr` },
+    '& .filter': { gridArea: 'filter' },
+    '& .products': { gridArea: 'products' },
+    '& .pagination': { gridArea: 'pagination' },
+    [up('xs')]: {
+      gridTemplateColumns: '1fr',
+      gridTemplateAreas: `'filter' 'products' 'pagination'`,
+    },
+    [up('sm')]: {
+      gridTemplateColumns: `${spacing(25)} 1fr`,
+      gridTemplateAreas: `'filter products' 'filter pagination'`,
+    },
   })
 );
 
@@ -38,6 +57,18 @@ const Homepage = () => {
   const { data: products } = useGetProductsQuery();
   const { data: brandsArray } = useGetBrandsQuery();
 
+  const [searchParams] = useSearchParams();
+
+  const page = Number(searchParams.get('page') || '1');
+
+  const pages = products
+    ? Math.ceil(products.length / PRODUCTS_PER_PAGE)
+    : null;
+
+  const lastProductIndex = page * PRODUCTS_PER_PAGE;
+  const firstProductIndex = lastProductIndex - PRODUCTS_PER_PAGE;
+  const currentProducts = products?.slice(firstProductIndex, lastProductIndex);
+
   const brands: { [key: string]: Brand } | undefined = useMemo(
     () =>
       brandsArray?.reduce(
@@ -55,9 +86,9 @@ const Homepage = () => {
       <GridBox>
         <Filter />
 
-        <ProductsGrid>
-          {!!products?.length &&
-            products.map(
+        <ProductsGrid className="products">
+          {!!currentProducts?.length &&
+            currentProducts.map(
               ({
                 id,
                 title,
@@ -83,6 +114,27 @@ const Homepage = () => {
               }
             )}
         </ProductsGrid>
+
+        {pages && pages > 1 && (
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            className="pagination"
+          >
+            <Pagination
+              boundaryCount={0}
+              count={pages}
+              page={page}
+              renderItem={(item) => (
+                <PaginationItem
+                  component={RouterLink}
+                  to={`?page=${item.page}`}
+                  {...item}
+                />
+              )}
+            />
+          </Stack>
+        )}
       </GridBox>
     </Container>
   );

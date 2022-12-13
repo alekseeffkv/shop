@@ -32,7 +32,7 @@ const Filter = () => {
   return (
     <>
       {!!data?.length && !shouldInitialize.current && (
-        <Box component="form">
+        <Box component="form" className="filter">
           <Typography variant="h6">Бренды</Typography>
 
           <Stack>
