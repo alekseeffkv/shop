@@ -1,73 +1,20 @@
 import { useMemo } from 'react';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
-import {
-  Box,
-  Container,
-  Pagination,
-  Stack,
-  styled,
-  PaginationItem,
-} from '@mui/material';
+import { Container, Pagination, Stack, PaginationItem } from '@mui/material';
 import { useGetBrandsQuery, useGetProductsQuery } from '../redux/shopApi';
+import { Brand } from '../types';
 import ProductCard from '../components/ProductCard';
 import Filter from '../components/Filter';
-import { Brand } from '../types';
+import GridBox from '../components/GridBox';
+import ProductsGrid from '../components/ProductsGrid';
 
 const PRODUCTS_PER_PAGE = 6;
-
-const GridBox = styled(Box)(
-  ({
-    theme: {
-      spacing,
-      breakpoints: { up },
-    },
-  }) => ({
-    display: 'grid',
-    gap: spacing(6),
-    '& .filter': { gridArea: 'filter' },
-    '& .products': { gridArea: 'products' },
-    '& .pagination': { gridArea: 'pagination' },
-    [up('xs')]: {
-      gridTemplateColumns: '1fr',
-      gridTemplateAreas: `'filter' 'products' 'pagination'`,
-    },
-    [up('sm')]: {
-      gridTemplateColumns: `${spacing(25)} 1fr`,
-      gridTemplateAreas: `'filter products' 'filter pagination'`,
-    },
-  })
-);
-
-const ProductsGrid = styled(Box)(
-  ({
-    theme: {
-      spacing,
-      breakpoints: { up },
-    },
-  }) => ({
-    display: 'grid',
-    gap: spacing(3),
-    [up('xs')]: { gridTemplateColumns: '1fr' },
-    [up('sm')]: { gridTemplateColumns: 'repeat(2, 1fr)' },
-    [up('md')]: { gridTemplateColumns: 'repeat(3, 1fr)' },
-  })
-);
 
 const Homepage = () => {
   const { data: products } = useGetProductsQuery();
   const { data: brandsArray } = useGetBrandsQuery();
 
   const [searchParams] = useSearchParams();
-
-  const page = Number(searchParams.get('page') || '1');
-
-  const pages = products
-    ? Math.ceil(products.length / PRODUCTS_PER_PAGE)
-    : null;
-
-  const lastProductIndex = page * PRODUCTS_PER_PAGE;
-  const firstProductIndex = lastProductIndex - PRODUCTS_PER_PAGE;
-  const currentProducts = products?.slice(firstProductIndex, lastProductIndex);
 
   const brands: { [key: string]: Brand } | undefined = useMemo(
     () =>
@@ -81,14 +28,36 @@ const Homepage = () => {
     [brandsArray]
   );
 
+  const filteredBrands = searchParams.get('brands')?.split(',');
+
+  const filteredProducts = filteredBrands
+    ? products?.filter(({ brand }) =>
+        filteredBrands.includes(brands?.[brand].code || '')
+      )
+    : products;
+
+  const page = Number(searchParams.get('page') || '1');
+
+  const pages = filteredProducts
+    ? Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE)
+    : null;
+
+  const lastProductIndex = page * PRODUCTS_PER_PAGE;
+  const firstProductIndex = lastProductIndex - PRODUCTS_PER_PAGE;
+  const paginatedProducts = filteredProducts?.slice(
+    firstProductIndex,
+    lastProductIndex
+  );
+
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <GridBox>
         <Filter />
 
         <ProductsGrid className="products">
-          {!!currentProducts?.length &&
-            currentProducts.map(
+          {!!paginatedProducts?.length &&
+            brands &&
+            paginatedProducts.map(
               ({
                 id,
                 title,
@@ -107,7 +76,7 @@ const Homepage = () => {
                     key={id}
                     title={title}
                     image={image}
-                    brand={brands?.[brand].title}
+                    brand={brands[brand].title}
                     price={formatter.format(value)}
                   />
                 );
@@ -125,13 +94,17 @@ const Homepage = () => {
               boundaryCount={0}
               count={pages}
               page={page}
-              renderItem={(item) => (
-                <PaginationItem
-                  component={RouterLink}
-                  to={`?page=${item.page}`}
-                  {...item}
-                />
-              )}
+              renderItem={(item) => {
+                searchParams.set('page', String(item.page));
+
+                return (
+                  <PaginationItem
+                    component={RouterLink}
+                    to={`?${searchParams.toString()}`}
+                    {...item}
+                  />
+                );
+              }}
             />
           </Stack>
         )}

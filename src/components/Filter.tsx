@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useGetBrandsQuery } from '../redux/shopApi';
 import FilterItem from './FilterItem';
@@ -10,6 +11,8 @@ const Filter = () => {
 
   const { data, isSuccess } = useGetBrandsQuery();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const shouldInitialize = useRef(true);
 
   const handleChange = useCallback(
@@ -19,20 +22,66 @@ const Filter = () => {
     []
   );
 
+  const handleApply = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const brandsValue = Object.entries(values)
+      .reduce((acc: string[], value) => {
+        if (value[1]) acc.push(value[0]);
+
+        return acc;
+      }, [])
+      .join(',');
+
+    if (brandsValue) {
+      searchParams.set('brands', brandsValue);
+    } else {
+      searchParams.delete('brands');
+    }
+
+    searchParams.delete('page');
+
+    setSearchParams(searchParams);
+  };
+
+  const handleReset = () => {
+    const initialValues = Object.entries(values).reduce(
+      (acc, value) => ({ ...acc, [value[0]]: false }),
+      {}
+    );
+
+    setValues(initialValues);
+
+    searchParams.delete('brands');
+    searchParams.delete('page');
+
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
     if (isSuccess && shouldInitialize.current) {
-      setValues(
-        data.reduce((acc, { code }) => ({ ...acc, [code]: false }), {})
-      );
+      const brands = searchParams.get('brands')?.split(',');
+
+      const initialValues = data.reduce((acc: Values, { code }) => {
+        if (brands?.includes(code)) {
+          acc[code] = true;
+        } else {
+          acc[code] = false;
+        }
+
+        return acc;
+      }, {});
+
+      setValues(initialValues);
 
       shouldInitialize.current = false;
     }
-  }, [data, isSuccess]);
+  }, [data, isSuccess, searchParams]);
 
   return (
     <>
-      {!!data?.length && !shouldInitialize.current && (
-        <Box component="form" className="filter">
+      {isSuccess && !shouldInitialize.current && (
+        <Box component="form" className="filter" onSubmit={handleApply}>
           <Typography variant="h6">Бренды</Typography>
 
           <Stack>
@@ -51,7 +100,7 @@ const Filter = () => {
             <Button type="submit" variant="contained">
               Применить
             </Button>
-            <Button type="reset">Сбросить</Button>
+            <Button onClick={handleReset}>Сбросить</Button>
           </Stack>
         </Box>
       )}

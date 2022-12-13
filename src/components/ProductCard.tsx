@@ -15,7 +15,7 @@ type ProductCardProps = {
   title: string;
   price: string;
   image: string;
-  brand?: string;
+  brand: string;
 };
 
 const ProductCard = ({ title, price, image, brand }: ProductCardProps) => (
