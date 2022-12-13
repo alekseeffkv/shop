@@ -13,7 +13,7 @@ import { ReactComponent as LogoIcon } from '../static/icons/logo.svg';
 
 const Navbar = () => {
   return (
-    <AppBar>
+    <AppBar position="sticky">
       <Container maxWidth="lg">
         <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
           <MuiLink

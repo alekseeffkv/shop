@@ -45,7 +45,7 @@ const Filter = () => {
         ))}
       </Stack>
 
-      <Stack mt="1rem">
+      <Stack spacing="0.5rem" mt="1rem">
         <Button type="submit" variant="contained">
           Применить
         </Button>
