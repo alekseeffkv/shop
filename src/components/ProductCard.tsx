@@ -13,12 +13,12 @@ import {
 
 type ProductCardProps = {
   title: string;
-  brand: string;
   price: string;
   image: string;
+  brand?: string;
 };
 
-const ProductCard = ({ title, brand, price, image }: ProductCardProps) => (
+const ProductCard = ({ title, price, image, brand }: ProductCardProps) => (
   <Card component="article">
     <CardMedia
       component="img"

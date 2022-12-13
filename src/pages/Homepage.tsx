@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { Box, Container, styled } from '@mui/material';
-import { useGetProductsQuery } from '../redux/shopApi';
+import { useGetBrandsQuery, useGetProductsQuery } from '../redux/shopApi';
 import ProductCard from '../components/ProductCard';
 import Filter from '../components/Filter';
+import { Brand } from '../types';
 
 const GridBox = styled(Box)(
   ({
@@ -33,7 +35,20 @@ const ProductsGrid = styled(Box)(
 );
 
 const Homepage = () => {
-  const { data } = useGetProductsQuery();
+  const { data: products } = useGetProductsQuery();
+  const { data: brandsArray } = useGetBrandsQuery();
+
+  const brands: { [key: string]: Brand } | undefined = useMemo(
+    () =>
+      brandsArray?.reduce(
+        (acc, brand) => ({
+          ...acc,
+          [brand.id]: brand,
+        }),
+        {}
+      ),
+    [brandsArray]
+  );
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -41,16 +56,32 @@ const Homepage = () => {
         <Filter />
 
         <ProductsGrid>
-          {!!data?.length &&
-            data.map(({ id, title, image }) => (
-              <ProductCard
-                key={id}
-                title={title}
-                image={image}
-                brand="Brand 1"
-                price="27 USD"
-              />
-            ))}
+          {!!products?.length &&
+            products.map(
+              ({
+                id,
+                title,
+                image,
+                brand,
+                regular_price: { currency, value },
+              }) => {
+                const formatter = new Intl.NumberFormat('ru', {
+                  style: 'currency',
+                  currency,
+                  minimumFractionDigits: 2,
+                });
+
+                return (
+                  <ProductCard
+                    key={id}
+                    title={title}
+                    image={image}
+                    brand={brands?.[brand].title}
+                    price={formatter.format(value)}
+                  />
+                );
+              }
+            )}
         </ProductsGrid>
       </GridBox>
     </Container>
