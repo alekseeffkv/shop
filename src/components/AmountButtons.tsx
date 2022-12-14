@@ -19,7 +19,7 @@ const AmountButtons = ({
       disableElevation
       sx={{ justifyContent: 'space-between', alignItems: 'center' }}
     >
-      <IconButton disabled={amount === 1} onClick={decrement}>
+      <IconButton onClick={decrement}>
         <RemoveRoundedIcon />
       </IconButton>
 

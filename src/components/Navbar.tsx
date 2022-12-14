@@ -28,7 +28,7 @@ const Navbar = () => {
             />
           </MuiLink>
 
-          <IconButton>
+          <IconButton component={RouterLink} to="/cart">
             <Badge badgeContent={4} color="info">
               <ShoppingCartOutlinedIcon sx={{ color: 'common.white' }} />
             </Badge>

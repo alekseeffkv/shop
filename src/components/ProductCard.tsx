@@ -29,7 +29,7 @@ const ProductCard = ({
   const dispatch = useAppDispatch();
 
   const decrement = () => {
-    setAmount((prevState) => prevState - 1);
+    setAmount((prevState) => (prevState > 1 ? prevState - 1 : 1));
   };
 
   const increment = () => {
