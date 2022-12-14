@@ -7,7 +7,7 @@ type OrderState = {
   error: unknown;
 };
 
-type Payload = { id: number; count: number };
+type Payload = { id: number; amount: number };
 
 const initialState: OrderState = {
   entities: {},
@@ -20,8 +20,11 @@ export const orderSlice = createSlice({
   name: 'order',
   initialState,
   reducers: {
-    add: ({ entities }, { payload: { id, count } }: PayloadAction<Payload>) => {
-      entities[id] = (entities[id] || 0) + count;
+    add: (
+      { entities },
+      { payload: { id, amount } }: PayloadAction<Payload>
+    ) => {
+      entities[id] = (entities[id] || 0) + amount;
     },
     remove: ({ entities }, { payload: { id } }: PayloadAction<Payload>) => {
       entities[id] = 0;

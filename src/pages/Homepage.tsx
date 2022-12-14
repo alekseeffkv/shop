@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { Container, Pagination, Stack, PaginationItem } from '@mui/material';
-import { useGetBrandsQuery, useGetProductsQuery } from '../redux/shopApi';
+import { useGetProductsQuery } from '../redux/shopApi';
+import { useAppSelector } from '../redux/hooks';
+import { selectBrands } from '../redux/selectors';
 import { Brand } from '../types';
 import ProductCard from '../components/ProductCard';
 import Filter from '../components/Filter';
@@ -12,27 +13,16 @@ const PRODUCTS_PER_PAGE = 6;
 
 const Homepage = () => {
   const { data: products } = useGetProductsQuery();
-  const { data: brandsArray } = useGetBrandsQuery();
 
   const [searchParams] = useSearchParams();
 
-  const brands: { [key: string]: Brand } | undefined = useMemo(
-    () =>
-      brandsArray?.reduce(
-        (acc, brand) => ({
-          ...acc,
-          [brand.id]: brand,
-        }),
-        {}
-      ),
-    [brandsArray]
-  );
+  const brands: { [key: string]: Brand } = useAppSelector(selectBrands);
 
   const filteredBrands = searchParams.get('brands')?.split(',');
 
   const filteredProducts = filteredBrands
     ? products?.filter(({ brand }) =>
-        filteredBrands.includes(brands?.[brand].code || '')
+        filteredBrands.includes(brands[brand].code || '')
       )
     : products;
 
@@ -56,12 +46,11 @@ const Homepage = () => {
 
         <ProductsGrid className="products">
           {!!paginatedProducts?.length &&
-            brands &&
             paginatedProducts.map(
-              ({ id, sku, title, image, brand, regular_price }) => (
+              ({ id, title, image, brand, regular_price }) => (
                 <ProductCard
                   key={id}
-                  sku={sku}
+                  id={id}
                   title={title}
                   image={image}
                   brand={brands[brand].title}

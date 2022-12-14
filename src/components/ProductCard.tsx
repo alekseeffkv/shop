@@ -27,7 +27,7 @@ const ProductCard = ({
   brand,
   price: { currency, value },
 }: ProductCardProps) => {
-  const [count, setCount] = useState(1);
+  const [amount, setAmount] = useState(1);
 
   const dispatch = useAppDispatch();
 
@@ -38,11 +38,11 @@ const ProductCard = ({
   });
 
   const decrement = () => {
-    setCount((prevState) => prevState - 1);
+    setAmount((prevState) => prevState - 1);
   };
 
   const increment = () => {
-    setCount((prevState) => prevState + 1);
+    setAmount((prevState) => prevState + 1);
   };
 
   return (
@@ -64,7 +64,7 @@ const ProductCard = ({
         </Typography>
 
         <Typography variant="h6" component="div">
-          {formatter.format(count * value)}
+          {formatter.format(amount * value)}
         </Typography>
 
         <ButtonGroup
@@ -72,11 +72,11 @@ const ProductCard = ({
           disableElevation
           sx={{ justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <IconButton disabled={count === 1} onClick={decrement}>
+          <IconButton disabled={amount === 1} onClick={decrement}>
             <RemoveRoundedIcon />
           </IconButton>
 
-          <Box typography="h6">{`${count} шт`}</Box>
+          <Box typography="h6">{`${amount} шт`}</Box>
 
           <IconButton onClick={increment}>
             <AddRoundedIcon />
@@ -87,7 +87,7 @@ const ProductCard = ({
           fullWidth
           disableElevation
           variant="contained"
-          onClick={() => dispatch(add({ id, count }))}
+          onClick={() => dispatch(add({ id, amount }))}
         >
           В корзину
         </Button>
