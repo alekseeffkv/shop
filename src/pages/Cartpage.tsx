@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
+  LinearProgress,
   List,
   ListItem,
   ListItemText,
@@ -38,6 +39,7 @@ const Cartpage = () => {
 
   const dispatch = useAppDispatch();
   const orderProducts = useAppSelector(selectOrderProducts);
+  const orderProductsAmount = orderProducts.length;
   const brands: { [key: string]: Brand } = useAppSelector(selectBrands);
   const loading = useAppSelector(selectOrderLoading);
   const error = useAppSelector(selectOrderError);
@@ -84,74 +86,88 @@ const Cartpage = () => {
         Корзина
       </Typography>
 
-      <List>
-        {orderProducts.map(
-          ({
-            product: {
-              id,
-              title,
-              brand,
-              regular_price: { value, currency },
-            },
-            amount,
-          }) => (
-            <ListItem
-              key={id}
-              divider
-              sx={{ flexDirection: { xs: 'column', sm: 'row' } }}
-            >
+      {!orderProductsAmount && (
+        <Typography component="p" variant="h5" align="center" py={6}>
+          Добавьте товар в корзину
+        </Typography>
+      )}
+
+      {!!orderProductsAmount && (
+        <>
+          <List>
+            {orderProducts.map(
+              ({
+                product: {
+                  id,
+                  title,
+                  brand,
+                  regular_price: { value, currency },
+                },
+                amount,
+              }) => (
+                <ListItem
+                  key={id}
+                  divider
+                  sx={{ flexDirection: { xs: 'column', sm: 'row' } }}
+                >
+                  <ListItemText
+                    primary={title}
+                    secondary={brands[brand].title}
+                    primaryTypographyProps={{
+                      component: 'div',
+                      variant: 'h5',
+                      gutterBottom: true,
+                    }}
+                    sx={{ alignSelf: { xs: 'flex-start', sm: 'initial' } }}
+                  />
+
+                  <Stack
+                    flexDirection="row"
+                    alignItems="center"
+                    alignSelf={{ xs: 'flex-end', sm: 'initial' }}
+                  >
+                    <Box mr={3} minWidth="9rem">
+                      <AmountButtons
+                        amount={amount}
+                        decrement={() => dispatch(decrement({ id }))}
+                        increment={() => dispatch(increment({ id }))}
+                      />
+                    </Box>
+
+                    <Stack
+                      flexDirection="row"
+                      justifyContent="flex-end"
+                      minWidth="7rem"
+                    >
+                      <Total
+                        amount={amount}
+                        value={value}
+                        currency={currency}
+                      />
+                    </Stack>
+                  </Stack>
+                </ListItem>
+              )
+            )}
+
+            <ListItem sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
               <ListItemText
-                primary={title}
-                secondary={brands[brand].title}
-                primaryTypographyProps={{
-                  component: 'div',
-                  variant: 'h5',
-                  gutterBottom: true,
-                }}
+                primary="Общая сумма заказа"
+                primaryTypographyProps={{ component: 'div', variant: 'h5' }}
                 sx={{ alignSelf: { xs: 'flex-start', sm: 'initial' } }}
               />
 
-              <Stack
-                flexDirection="row"
-                alignItems="center"
-                alignSelf={{ xs: 'flex-end', sm: 'initial' }}
-              >
-                <Box mr={3} minWidth="9rem">
-                  <AmountButtons
-                    amount={amount}
-                    decrement={() => dispatch(decrement({ id }))}
-                    increment={() => dispatch(increment({ id }))}
-                  />
-                </Box>
-
-                <Stack
-                  flexDirection="row"
-                  justifyContent="flex-end"
-                  minWidth="7rem"
-                >
-                  <Total amount={amount} value={value} currency={currency} />
-                </Stack>
-              </Stack>
+              <Box alignSelf={{ xs: 'flex-end', sm: 'initial' }}>
+                <Total amount={1} value={total} currency="USD" />
+              </Box>
             </ListItem>
-          )
-        )}
+          </List>
 
-        <ListItem sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
-          <ListItemText
-            primary="Общая сумма заказа"
-            primaryTypographyProps={{ component: 'div', variant: 'h5' }}
-            sx={{ alignSelf: { xs: 'flex-start', sm: 'initial' } }}
-          />
-
-          <Box alignSelf={{ xs: 'flex-end', sm: 'initial' }}>
-            <Total amount={1} value={total} currency="USD" />
-          </Box>
-        </ListItem>
-      </List>
-
-      <Container maxWidth="xs" sx={{ py: 6 }}>
-        <UserForm />
-      </Container>
+          <Container maxWidth="xs" sx={{ py: 6 }}>
+            <UserForm />
+          </Container>
+        </>
+      )}
 
       <Dialog open={openDialog} onClose={closeDialog}>
         <DialogTitle>Заказ успешно оформлен</DialogTitle>
@@ -166,6 +182,12 @@ const Cartpage = () => {
           {error?.message}
         </Alert>
       </Snackbar>
+
+      {loading === 'pending' && (
+        <Box position="fixed" zIndex="drawer" top={0} left={0} right={0}>
+          <LinearProgress color="info" />
+        </Box>
+      )}
     </Container>
   );
 };

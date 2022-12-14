@@ -60,7 +60,7 @@ const Homepage = () => {
             )}
         </ProductsGrid>
 
-        {pages && pages > 1 && (
+        {!!pages && pages > 1 && (
           <Stack
             justifyContent="center"
             alignItems="center"

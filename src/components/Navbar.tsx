@@ -15,7 +15,7 @@ import { selectOrderProducts } from '../redux/selectors';
 
 const Navbar = () => {
   const orderProducts = useAppSelector(selectOrderProducts);
-  const productsAmount = orderProducts.length;
+  const orderProductsAmount = orderProducts.length;
 
   return (
     <AppBar position="sticky">
@@ -34,11 +34,11 @@ const Navbar = () => {
           </MuiLink>
 
           <IconButton
-            disabled={!productsAmount}
+            disabled={!orderProductsAmount}
             component={RouterLink}
             to="/cart"
           >
-            <Badge badgeContent={productsAmount} color="info">
+            <Badge badgeContent={orderProductsAmount} color="info">
               <ShoppingCartOutlinedIcon sx={{ color: 'common.white' }} />
             </Badge>
           </IconButton>

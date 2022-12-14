@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Box, Button, Stack, TextField } from '@mui/material';
 import { User } from '../types';
-import { useAppDispatch } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { createOrder } from '../redux/orderSlice';
+import { selectOrderLoading } from '../redux/selectors';
 
 const initialValues = {
   name: '',
@@ -13,6 +14,7 @@ const UserForm = () => {
   const [values, setValues] = useState<User>(initialValues);
 
   const dispatch = useAppDispatch();
+  const loading = useAppSelector(selectOrderLoading);
 
   const { name, tel } = values;
 
@@ -56,7 +58,11 @@ const UserForm = () => {
           onChange={handleChange}
         />
 
-        <Button type="submit" variant="contained">
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={loading === 'pending'}
+        >
           Оформить заказ
         </Button>
       </Stack>
