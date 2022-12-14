@@ -51,3 +51,9 @@ export const selectOrderProducts = createSelector(
 export const selectOrderData = createSelector(selectOrder, (order) =>
   Object.entries(order).map(([id, amount]) => ({ id, amount }))
 );
+
+export const selectTotal = createSelector(
+  selectOrderProducts,
+  (orderProducts) =>
+    orderProducts.reduce((acc, { subtotal }) => acc + subtotal, 0)
+);

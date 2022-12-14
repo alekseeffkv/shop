@@ -15,13 +15,14 @@ import {
   Typography,
 } from '@mui/material';
 import AmountButtons from '../components/AmountButtons';
-import Subtotal from '../components/Subtotal';
+import Total from '../components/Total';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   selectBrands,
   selectOrderError,
   selectOrderLoading,
   selectOrderProducts,
+  selectTotal,
 } from '../redux/selectors';
 import { shopApi } from '../redux/shopApi';
 import { Brand } from '../types';
@@ -40,6 +41,7 @@ const Cartpage = () => {
   const brands: { [key: string]: Brand } = useAppSelector(selectBrands);
   const loading = useAppSelector(selectOrderLoading);
   const error = useAppSelector(selectOrderError);
+  const total = useAppSelector(selectTotal);
 
   const closeDialog = () => {
     setOpenDialog(false);
@@ -127,7 +129,7 @@ const Cartpage = () => {
                   justifyContent="flex-end"
                   minWidth="7rem"
                 >
-                  <Subtotal amount={amount} value={value} currency={currency} />
+                  <Total amount={amount} value={value} currency={currency} />
                 </Stack>
               </Stack>
             </ListItem>
@@ -140,6 +142,10 @@ const Cartpage = () => {
             primaryTypographyProps={{ component: 'div', variant: 'h5' }}
             sx={{ alignSelf: { xs: 'flex-start', sm: 'initial' } }}
           />
+
+          <Box alignSelf={{ xs: 'flex-end', sm: 'initial' }}>
+            <Total amount={1} value={total} currency="USD" />
+          </Box>
         </ListItem>
       </List>
 

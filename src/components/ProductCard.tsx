@@ -10,7 +10,7 @@ import { Product, Price } from '../types';
 import { useAppDispatch } from '../redux/hooks';
 import { add } from '../redux/orderSlice';
 import AmountButtons from './AmountButtons';
-import Subtotal from './Subtotal';
+import Total from './Total';
 
 type ProductCardProps = Pick<Product, 'id' | 'title' | 'image'> & {
   brand: string;
@@ -54,7 +54,7 @@ const ProductCard = ({
           {brand}
         </Typography>
 
-        <Subtotal amount={amount} value={value} currency={currency} />
+        <Total amount={amount} value={value} currency={currency} />
 
         <AmountButtons
           amount={amount}

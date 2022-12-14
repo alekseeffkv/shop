@@ -1,12 +1,12 @@
 import { Typography } from '@mui/material';
 
-type SubtotalProps = {
+type TotalProps = {
   amount: number;
   value: number;
   currency: string;
 };
 
-const Subtotal = ({ amount, value, currency }: SubtotalProps) => {
+const Total = ({ amount, value, currency }: TotalProps) => {
   const formatter = new Intl.NumberFormat('ru', {
     style: 'currency',
     currency,
@@ -20,4 +20,4 @@ const Subtotal = ({ amount, value, currency }: SubtotalProps) => {
   );
 };
 
-export default Subtotal;
+export default Total;

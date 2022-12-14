@@ -10,8 +10,12 @@ import {
   Toolbar,
 } from '@mui/material';
 import { ReactComponent as LogoIcon } from '../static/icons/logo.svg';
+import { useAppSelector } from '../redux/hooks';
+import { selectOrderProducts } from '../redux/selectors';
 
 const Navbar = () => {
+  const orderProducts = useAppSelector(selectOrderProducts);
+
   return (
     <AppBar position="sticky">
       <Container maxWidth="lg">
@@ -29,7 +33,7 @@ const Navbar = () => {
           </MuiLink>
 
           <IconButton component={RouterLink} to="/cart">
-            <Badge badgeContent={4} color="info">
+            <Badge badgeContent={orderProducts.length} color="info">
               <ShoppingCartOutlinedIcon sx={{ color: 'common.white' }} />
             </Badge>
           </IconButton>
