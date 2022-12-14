@@ -15,6 +15,7 @@ import { selectBrands, selectOrderProducts } from '../redux/selectors';
 import { shopApi } from '../redux/shopApi';
 import { Brand } from '../types';
 import { decrement, increment } from '../redux/orderSlice';
+import UserForm from '../components/UserForm';
 
 const Cartpage = () => {
   const dispatch = useAppDispatch();
@@ -88,7 +89,19 @@ const Cartpage = () => {
             </ListItem>
           )
         )}
+
+        <ListItem sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
+          <ListItemText
+            primary="Общая сумма заказа"
+            primaryTypographyProps={{ component: 'div', variant: 'h5' }}
+            sx={{ alignSelf: { xs: 'flex-start', sm: 'initial' } }}
+          />
+        </ListItem>
       </List>
+
+      <Container maxWidth="xs" sx={{ py: 6 }}>
+        <UserForm />
+      </Container>
     </Container>
   );
 };

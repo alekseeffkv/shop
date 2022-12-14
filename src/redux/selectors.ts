@@ -44,3 +44,7 @@ export const selectOrderProducts = createSelector(
         subtotal: order[product.id] * product.regular_price.value,
       }))
 );
+
+export const selectOrderData = createSelector(selectOrder, (order) =>
+  Object.entries(order).map(([id, amount]) => ({ id, amount }))
+);

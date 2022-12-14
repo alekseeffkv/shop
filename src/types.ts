@@ -16,3 +16,5 @@ export type Product = {
   brand: number;
   regular_price: Price;
 };
+
+export type User = { name: string; tel: string };
