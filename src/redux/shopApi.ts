@@ -3,7 +3,7 @@ import type { Brand, Product } from '../types';
 
 export const shopApi = createApi({
   reducerPath: 'shopApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/data' }),
+  baseQuery: fetchBaseQuery({ baseUrl: `${process.env.PUBLIC_URL}/data` }),
   endpoints: (builder) => ({
     getBrands: builder.query<Brand[], void>({
       query: () => '/brands.json',

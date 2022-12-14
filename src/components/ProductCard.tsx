@@ -40,7 +40,7 @@ const ProductCard = ({
     <Card component="article">
       <CardMedia
         component="img"
-        src={image}
+        src={`${process.env.PUBLIC_URL}${image}`}
         alt={title}
         sx={{ borderRadius: 1 }}
       />
