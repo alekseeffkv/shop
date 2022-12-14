@@ -1,26 +1,62 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
+  Button,
   Container,
+  Dialog,
+  DialogActions,
+  DialogTitle,
   List,
   ListItem,
   ListItemText,
+  Snackbar,
   Stack,
   Typography,
 } from '@mui/material';
 import AmountButtons from '../components/AmountButtons';
 import Subtotal from '../components/Subtotal';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { selectBrands, selectOrderProducts } from '../redux/selectors';
+import {
+  selectBrands,
+  selectOrderError,
+  selectOrderLoading,
+  selectOrderProducts,
+} from '../redux/selectors';
 import { shopApi } from '../redux/shopApi';
 import { Brand } from '../types';
-import { decrement, increment } from '../redux/orderSlice';
+import { decrement, increment, reset } from '../redux/orderSlice';
 import UserForm from '../components/UserForm';
+import Alert from '../components/Alert';
 
 const Cartpage = () => {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+
+  const navigate = useNavigate();
+
   const dispatch = useAppDispatch();
   const orderProducts = useAppSelector(selectOrderProducts);
   const brands: { [key: string]: Brand } = useAppSelector(selectBrands);
+  const loading = useAppSelector(selectOrderLoading);
+  const error = useAppSelector(selectOrderError);
+
+  const closeDialog = () => {
+    setOpenDialog(false);
+
+    dispatch(reset());
+
+    navigate('/');
+  };
+
+  const closeAlert = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') return;
+
+    setOpenAlert(false);
+  };
 
   useEffect(() => {
     const brands = dispatch(shopApi.endpoints.getBrands.initiate());
@@ -31,6 +67,14 @@ const Cartpage = () => {
       products.unsubscribe();
     };
   }, [dispatch]);
+
+  useEffect(() => {
+    if (loading === 'succeeded') {
+      setOpenDialog(true);
+    } else if (loading === 'failed') {
+      setOpenAlert(true);
+    }
+  }, [loading]);
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
@@ -102,6 +146,20 @@ const Cartpage = () => {
       <Container maxWidth="xs" sx={{ py: 6 }}>
         <UserForm />
       </Container>
+
+      <Dialog open={openDialog} onClose={closeDialog}>
+        <DialogTitle>Заказ успешно оформлен</DialogTitle>
+
+        <DialogActions>
+          <Button onClick={closeDialog}>Закрыть</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={closeAlert}>
+        <Alert onClose={closeAlert} severity="error" sx={{ width: '100%' }}>
+          {error?.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

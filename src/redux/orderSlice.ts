@@ -3,10 +3,12 @@ import { User } from '../types';
 import { selectOrderData } from './selectors';
 import { RootState } from './store';
 
+type Error = { message: string };
+
 type OrderState = {
   entities: { [key: string]: number };
   loading: 'idle' | 'pending' | 'succeeded' | 'failed';
-  error: unknown;
+  error?: Error | null;
 };
 
 type Payload = { id: number; amount: number } | { id: number };
@@ -17,36 +19,37 @@ const initialState: OrderState = {
   error: null,
 };
 
-export const createOrder = createAsyncThunk<void, User, { state: RootState }>(
-  'order/create',
-  async (userData, { rejectWithValue, getState }) => {
-    const state = getState();
-    const order = selectOrderData(state);
-    const { name, tel } = userData;
+export const createOrder = createAsyncThunk<
+  void,
+  User,
+  { rejectValue: Error; state: RootState }
+>('order/create', async (userData, { rejectWithValue, getState }) => {
+  const state = getState();
+  const order = selectOrderData(state);
+  const { name, tel } = userData;
 
-    const postData = new FormData();
-    postData.append('name', name);
-    postData.append('tel', tel);
-    postData.append('order', JSON.stringify(order));
+  const postData = new FormData();
+  postData.append('name', name);
+  postData.append('tel', tel);
+  postData.append('order', JSON.stringify(order));
 
-    try {
-      const response = await fetch('https://app.aaccent.su/js/confirm.php', {
-        method: 'POST',
-        body: postData,
-      });
+  try {
+    const response = await fetch('https://app.aaccent.su/js/confirm.php', {
+      method: 'POST',
+      body: postData,
+    });
 
-      const data: { result: string } = await response.json();
+    const data: { result: string } = await response.json();
 
-      if (data.result !== 'ok') {
-        throw new Error('Не удалось отправить заказ');
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        return rejectWithValue(err.message);
-      }
+    if (data.result !== 'ok') {
+      throw new Error();
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      return rejectWithValue({ message: 'Не удалось отправить заказ' });
     }
   }
-);
+});
 
 export const orderSlice = createSlice({
   name: 'order',
@@ -64,6 +67,9 @@ export const orderSlice = createSlice({
     increment: ({ entities }, { payload: { id } }: PayloadAction<Payload>) => {
       entities[id] = (entities[id] || 0) + 1;
     },
+    reset: (state) => {
+      state = initialState;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(createOrder.pending, (state) => {
@@ -80,6 +86,6 @@ export const orderSlice = createSlice({
   },
 });
 
-export const { add, decrement, increment } = orderSlice.actions;
+export const { add, decrement, increment, reset } = orderSlice.actions;
 
 export default orderSlice.reducer;

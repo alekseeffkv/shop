@@ -7,6 +7,9 @@ const selectProductsResult = shopApi.endpoints.getProducts.select();
 const selectBrandsResult = shopApi.endpoints.getBrands.select();
 const selectOrder = (state: RootState) => state.order.entities;
 
+export const selectOrderLoading = (state: RootState) => state.order.loading;
+export const selectOrderError = (state: RootState) => state.order.error;
+
 const selectProducts = createSelector(
   selectProductsResult,
   ({ data }) =>
