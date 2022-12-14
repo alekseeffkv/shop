@@ -68,7 +68,8 @@ export const orderSlice = createSlice({
       entities[id] = (entities[id] || 0) + 1;
     },
     reset: (state) => {
-      state = initialState;
+      state.entities = {};
+      state.loading = 'idle';
     },
   },
   extraReducers: (builder) => {

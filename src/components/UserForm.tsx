@@ -38,7 +38,6 @@ const UserForm = () => {
           autoComplete="name"
           size="small"
           fullWidth
-          autoFocus
           inputProps={{ tabIndex: 1 }}
           value={name}
           onChange={handleChange}
