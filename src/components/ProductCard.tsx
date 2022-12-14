@@ -15,13 +15,13 @@ import { Product, Price } from '../types';
 import { useAppDispatch } from '../redux/hooks';
 import { add } from '../redux/orderSlice';
 
-type ProductCardProps = Pick<Product, 'sku' | 'title' | 'image'> & {
+type ProductCardProps = Pick<Product, 'id' | 'title' | 'image'> & {
   brand: string;
   price: Price;
 };
 
 const ProductCard = ({
-  sku,
+  id,
   title,
   image,
   brand,
@@ -87,7 +87,7 @@ const ProductCard = ({
           fullWidth
           disableElevation
           variant="contained"
-          onClick={() => dispatch(add({ sku, count }))}
+          onClick={() => dispatch(add({ id, count }))}
         >
           В корзину
         </Button>
